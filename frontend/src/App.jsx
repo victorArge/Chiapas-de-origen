@@ -22,7 +22,14 @@ function App() {
           <Route path="/especialidades" element={<Specialties />} />
           <Route path="/asesores" element={<Advisors />} />
           <Route path="/asesores/:id" element={<AdvisorProfile />} />
-          <Route path="/asesores/:id/solicitar" element={<RequestAdvisory />} />
+          <Route
+            path="/asesores/:id/solicitar"
+            element={
+              <ProtectedRoute roles={['PRODUCER']}>
+                <RequestAdvisory />
+              </ProtectedRoute>
+            }
+          />
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Register />} />
           <Route

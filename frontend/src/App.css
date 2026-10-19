@@ -317,6 +317,75 @@
   height: 16px;
 }
 
+.panel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 32px;
+  text-align: left;
+}
+
+.panel-subtitle {
+  margin: 0 0 16px;
+  font-size: 1.2rem;
+}
+
+.request-list {
+  display: grid;
+  gap: 16px;
+}
+
+.request-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.request-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.request-head h3 {
+  margin: 0;
+}
+
+.status {
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-pending {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.status-accepted {
+  background: var(--green-100);
+  color: var(--green-900);
+}
+
+.status-rejected {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.status-finished {
+  background: #e0e7ff;
+  color: #3730a3;
+}
+
+.request-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
 .site-footer {
   border-top: 1px solid var(--border);
   padding: 24px;
