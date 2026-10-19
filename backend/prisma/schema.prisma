@@ -1,0 +1,96 @@
+// Esquema de datos de Chiapas de origen
+// Documentación: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  PRODUCER
+  ADVISOR
+  ADMIN
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  FINISHED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(PRODUCER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  advisorProfile AdvisorProfile?
+  requests       AdvisoryRequest[] @relation("RequesterRequests")
+
+  @@map("users")
+}
+
+model AdvisorProfile {
+  id                 String   @id @default(cuid())
+  userId             String   @unique
+  description        String
+  experience         String
+  state              String
+  municipality       String
+  contactInformation String
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialties AdvisorSpecialty[]
+  requests    AdvisoryRequest[]
+
+  @@map("advisor_profiles")
+}
+
+model AdvisoryType {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String
+
+  advisors AdvisorSpecialty[]
+  requests AdvisoryRequest[]
+
+  @@map("advisory_types")
+}
+
+model AdvisorSpecialty {
+  advisorProfileId String
+  advisoryTypeId   String
+
+  advisorProfile AdvisorProfile @relation(fields: [advisorProfileId], references: [id], onDelete: Cascade)
+  advisoryType   AdvisoryType   @relation(fields: [advisoryTypeId], references: [id], onDelete: Cascade)
+
+  @@id([advisorProfileId, advisoryTypeId])
+  @@map("advisor_specialties")
+}
+
+model AdvisoryRequest {
+  id                 String        @id @default(cuid())
+  requesterId        String
+  advisorProfileId   String
+  advisoryTypeId     String
+  problemDescription String
+  status             RequestStatus @default(PENDING)
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  requester      User           @relation("RequesterRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  advisorProfile AdvisorProfile @relation(fields: [advisorProfileId], references: [id], onDelete: Cascade)
+  advisoryType   AdvisoryType   @relation(fields: [advisoryTypeId], references: [id])
+
+  @@map("advisory_requests")
+}

@@ -1,0 +1,178 @@
+# PROJECT_CONTEXT.md — Chiapas de origen
+
+## 1. Descripción del proyecto
+
+Chiapas de origen es una plataforma web que conecta a productores agrícolas que necesitan orientación técnica con profesionales que ofrecen asesoría agronómica.
+
+El proyecto está enfocado inicialmente en cuatro especialidades relacionadas con el cultivo de plátano:
+
+1. Establecimiento de la plantación.
+2. Control de plagas y enfermedades.
+3. Gestión del agua y riego.
+4. Nutrición y fertilización.
+
+La plataforma funcionará como un directorio especializado y un medio para enviar solicitudes de asesoría. No es una plataforma de cursos ni un sistema de videoconferencias.
+
+## 2. Objetivo general
+
+Desarrollar una plataforma web que facilite la búsqueda y el contacto entre productores agrícolas y asesores agronómicos, permitiendo consultar especialidades, revisar perfiles profesionales y gestionar solicitudes de asesoría.
+
+## 3. Objetivos específicos
+
+- Organizar los tipos de asesoría agronómica disponibles.
+- Permitir el registro de productores y asesores.
+- Facilitar la publicación de perfiles profesionales.
+- Permitir la búsqueda de asesores por especialidad, estado y municipio.
+- Implementar solicitudes de asesoría con seguimiento de su estado.
+- Proporcionar una interfaz clara, adaptable a dispositivos móviles y sencilla de utilizar.
+
+## 4. Tipos de usuarios
+
+### Productor o solicitante
+
+Puede:
+- Registrarse e iniciar sesión.
+- Consultar las especialidades agronómicas.
+- Buscar asesores y revisar sus perfiles.
+- Enviar solicitudes de asesoría.
+- Consultar el estado de sus solicitudes.
+
+### Asesor agronómico
+
+Puede:
+- Registrarse e iniciar sesión.
+- Crear y actualizar su perfil profesional.
+- Indicar sus especialidades, experiencia y ubicación.
+- Consultar solicitudes recibidas.
+- Aceptar o rechazar solicitudes.
+- Marcar solicitudes como finalizadas cuando corresponda.
+
+Un administrador puede incorporarse posteriormente si resulta necesario para moderar perfiles y supervisar la plataforma.
+
+## 5. Especialidades agronómicas
+
+### Establecimiento de la plantación
+Planificación e inicio del cultivo de plátano, siembra, densidad de plantas y condiciones iniciales para conseguir un desarrollo uniforme y productivo.
+
+### Control de plagas y enfermedades
+Diagnóstico, prevención y control de insectos, hongos, bacterias y malezas que afectan la salud y productividad del cultivo.
+
+### Gestión del agua y riego
+Administración eficiente del agua, diseño y operación de sistemas de riego y programación del suministro hídrico según las necesidades del cultivo.
+
+### Nutrición y fertilización
+Diseño de programas de fertilización, interpretación de análisis de suelo y foliares y aplicación adecuada de macro y micronutrientes.
+
+Estas cuatro especialidades deben estar disponibles desde la primera versión.
+
+## 6. Tecnologías previstas
+
+- Frontend: React con Vite y JavaScript.
+- Estilos: CSS adaptable a móviles.
+- Backend: Node.js con Express.
+- API: REST.
+- Base de datos: PostgreSQL.
+- ORM: Prisma.
+- Control de versiones: Git.
+- Pruebas de API: Postman.
+
+Antes de instalar o cambiar dependencias, inspeccionar los archivos y comprobar qué está instalado.
+
+## 7. Diseño visual
+
+Utilizar verde y blanco como colores principales, con una estética profesional inspirada en la agricultura.
+
+La interfaz debe incluir:
+- Página de inicio con una descripción de la plataforma.
+- Catálogo de especialidades.
+- Buscador y filtros.
+- Listado de asesores.
+- Perfil detallado del asesor.
+- Formularios de registro e inicio de sesión.
+- Panel del productor.
+- Panel del asesor.
+- Formulario de solicitud de asesoría.
+
+El diseño debe ser responsive y accesible, con navegación clara, formularios validados y mensajes de error comprensibles.
+
+## 8. Modelo de datos inicial
+
+### User
+- id
+- name
+- email
+- passwordHash
+- role
+- createdAt
+- updatedAt
+
+### AdvisorProfile
+- id
+- userId
+- description
+- experience
+- state
+- municipality
+- contactInformation
+
+### AdvisoryType
+- id
+- name
+- description
+
+### AdvisorSpecialty
+- advisorProfileId
+- advisoryTypeId
+
+Esta entidad relaciona a los asesores con una o varias especialidades.
+
+### AdvisoryRequest
+- id
+- requesterId
+- advisorProfileId
+- advisoryTypeId
+- problemDescription
+- status
+- createdAt
+- updatedAt
+
+Ajustar los nombres y relaciones al definir el esquema Prisma. No almacenar contraseñas en texto plano. Validar las entradas y comprobar los permisos en el backend.
+
+## 9. Etapas de desarrollo
+
+1. Inspeccionar el proyecto y verificar su estado actual.
+2. Preparar la interfaz y el diseño visual.
+3. Configurar PostgreSQL y Prisma.
+4. Implementar registro, inicio de sesión y permisos.
+5. Desarrollar perfiles profesionales y especialidades.
+6. Implementar búsqueda, filtros y solicitudes de asesoría.
+7. Ejecutar pruebas, corregir errores y documentar la aplicación.
+
+Completar y verificar cada etapa antes de iniciar la siguiente.
+
+## 10. Reglas de trabajo para el agente
+
+- Trabajar directamente en la carpeta local del proyecto.
+- Leer y comprender los archivos existentes antes de modificarlos.
+- No reconstruir el proyecto desde cero sin una razón justificada.
+- No sobrescribir archivos funcionales innecesariamente.
+- Realizar cambios pequeños, claros y verificables.
+- Explicar qué archivos se modificaron y por qué.
+- Ejecutar pruebas reales cuando sea posible.
+- No inventar resultados de pruebas.
+- No exponer credenciales ni secretos.
+- No ejecutar acciones destructivas ni migraciones que puedan perder datos sin autorización.
+- No integrar pagos, videollamadas ni funciones complejas que no sean necesarias para la primera versión.
+- Si falta información, explicar la duda antes de tomar una decisión que afecte la arquitectura.
+
+## 11. Primera tarea
+
+Comenzar únicamente con la inspección inicial:
+
+1. Mostrar la estructura del proyecto.
+2. Identificar las tecnologías y dependencias existentes.
+3. Revisar los archivos de configuración.
+4. Comprobar si el frontend y backend pueden ejecutarse.
+5. Reportar errores encontrados y proponer los siguientes pasos.
+
+No comenzar cambios importantes ni implementar la base de datos hasta terminar la inspección y presentar los resultados.
