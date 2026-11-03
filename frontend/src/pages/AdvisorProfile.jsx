@@ -35,6 +35,11 @@ function AdvisorProfile() {
   return (
     <section className="section narrow">
       <h2>{profile.name}</h2>
+      {profile.verified && (
+        <p>
+          <span className="status status-approved">Asesor verificado</span>
+        </p>
+      )}
       <p className="card-meta">
         {profile.municipality}, {profile.state}
       </p>

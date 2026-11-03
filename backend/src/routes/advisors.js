@@ -1,13 +1,22 @@
 import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authenticate, authorize } from '../middleware/auth.js';
+import { requireActiveSubscription } from '../middleware/subscription.js';
+import { isSubscriptionActive } from '../lib/subscriptions.js';
 import { formatZodError } from '../validators/auth.js';
 import { advisorProfileSchema, advisorQuerySchema } from '../validators/advisor.js';
 
 const router = Router();
 
 const includeProfile = {
-  user: { select: { id: true, name: true } },
+  user: {
+    select: {
+      id: true,
+      name: true,
+      subscription: { select: { status: true, currentPeriodEnd: true } },
+    },
+  },
+  verification: { select: { status: true } },
   specialties: {
     include: { advisoryType: { select: { id: true, name: true } } },
   },
@@ -22,6 +31,9 @@ function toPublicProfile(profile) {
     state: profile.state,
     municipality: profile.municipality,
     contactInformation: profile.contactInformation,
+    verified:
+      profile.verification?.status === 'APPROVED' &&
+      isSubscriptionActive(profile.user.subscription),
     specialties: profile.specialties.map((s) => ({
       id: s.advisoryType.id,
       name: s.advisoryType.name,
@@ -46,10 +58,16 @@ router.get('/', async (req, res, next) => {
     }
 
     const { specialty, state, municipality, q } = parsed.data;
-    const where = {};
+    const now = new Date();
+    const where = {
+      AND: [
+        { verification: { status: 'APPROVED' } },
+        { user: { subscription: { status: 'ACTIVE', currentPeriodEnd: { gt: now } } } },
+      ],
+    };
 
     if (specialty) {
-      where.specialties = { some: { advisoryTypeId: specialty } };
+      where.AND.push({ specialties: { some: { advisoryTypeId: specialty } } });
     }
     if (state) {
       where.state = { contains: state, mode: 'insensitive' };
@@ -58,7 +76,7 @@ router.get('/', async (req, res, next) => {
       where.municipality = { contains: municipality, mode: 'insensitive' };
     }
     if (q) {
-      where.user = { name: { contains: q, mode: 'insensitive' } };
+      where.AND.push({ user: { name: { contains: q, mode: 'insensitive' } } });
     }
 
     const profiles = await prisma.advisorProfile.findMany({
@@ -73,7 +91,7 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-router.get('/me', authenticate, authorize('ADVISOR'), async (req, res, next) => {
+router.get('/me', authenticate, authorize('ADVISOR'), requireActiveSubscription, async (req, res, next) => {
   try {
     const profile = await prisma.advisorProfile.findUnique({
       where: { userId: req.user.id },
@@ -88,9 +106,9 @@ router.get('/me', authenticate, authorize('ADVISOR'), async (req, res, next) => 
   } catch (error) {
     next(error);
   }
-});
+}); // before dynamic :id
 
-router.post('/', authenticate, authorize('ADVISOR'), async (req, res, next) => {
+router.post('/', authenticate, authorize('ADVISOR'), requireActiveSubscription, async (req, res, next) => {
   try {
     const parsed = advisorProfileSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -130,7 +148,7 @@ router.post('/', authenticate, authorize('ADVISOR'), async (req, res, next) => {
   }
 });
 
-router.put('/me', authenticate, authorize('ADVISOR'), async (req, res, next) => {
+router.put('/me', authenticate, authorize('ADVISOR'), requireActiveSubscription, async (req, res, next) => {
   try {
     const parsed = advisorProfileSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -180,8 +198,14 @@ router.put('/me', authenticate, authorize('ADVISOR'), async (req, res, next) => 
 
 router.get('/:id', async (req, res, next) => {
   try {
-    const profile = await prisma.advisorProfile.findUnique({
-      where: { id: req.params.id },
+    const profile = await prisma.advisorProfile.findFirst({
+      where: {
+        id: req.params.id,
+        verification: { status: 'APPROVED' },
+        user: {
+          subscription: { status: 'ACTIVE', currentPeriodEnd: { gt: new Date() } },
+        },
+      },
       include: includeProfile,
     });
 

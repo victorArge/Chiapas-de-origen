@@ -1,21 +1,29 @@
-:root {
-  --green-900: #14532d;
-  --green-700: #15803d;
-  --green-600: #16a34a;
-  --green-500: #22c55e;
-  --green-100: #dcfce7;
-  --green-50: #f0fdf4;
+﻿:root {
+  --green-900: #263d2d;
+  --green-700: #4a7c59;
+  --green-600: #4a7c59;
+  --green-500: #4a7c59;
+  --green-100: #e5eae4;
+  --green-50: #fff8e1;
+  --green-800: #35573f;
+  --banana: #ffd84d;
 
   --white: #ffffff;
-  --text: #1f2937;
-  --text-soft: #4b5563;
-  --border: #e5e7eb;
-  --shadow: rgba(20, 83, 45, 0.08) 0 8px 24px -8px;
+  --text: #263d2d;
+  --text-soft: #4a7c59;
+  --border: #e5eae4;
+
+  --radius: 14px;
+  --radius-sm: 10px;
+  --radius-lg: 20px;
+
+  --shadow-sm: 0 4px 14px -8px rgba(23, 102, 56, 0.2);
+  --shadow: rgba(23, 102, 56, 0.16) 0 12px 32px -14px;
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
 
-  font: 16px/1.5 var(--sans);
+  font: 16px/1.6 var(--sans);
   color-scheme: light;
   color: var(--text);
   background: var(--white);
@@ -29,6 +37,12 @@
 
 body {
   margin: 0;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  display: block;
 }
 
 h1,

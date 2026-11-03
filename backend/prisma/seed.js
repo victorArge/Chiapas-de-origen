@@ -1,4 +1,8 @@
+import bcrypt from 'bcryptjs'
 import { prisma } from '../src/lib/prisma.js'
+
+const SALT_ROUNDS = 10
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 const advisoryTypes = [
   {
@@ -23,6 +27,49 @@ const advisoryTypes = [
   },
 ]
 
+async function seedAdmin() {
+  const email = process.env.ADMIN_EMAIL?.trim().toLowerCase()
+  const password = process.env.ADMIN_PASSWORD
+  const name = process.env.ADMIN_NAME?.trim() || 'Administrador'
+
+  if (!email && !password) {
+    console.log(
+      'Admin: no se creó ninguna cuenta. Define ADMIN_EMAIL y ADMIN_PASSWORD para crearla.',
+    )
+    return
+  }
+
+  if (!email || !password) {
+    throw new Error('ADMIN_EMAIL y ADMIN_PASSWORD deben definirse juntos')
+  }
+  if (!EMAIL_PATTERN.test(email)) {
+    throw new Error('ADMIN_EMAIL no es un correo válido')
+  }
+  if (password.length < 8) {
+    throw new Error('ADMIN_PASSWORD debe tener al menos 8 caracteres')
+  }
+
+  const existing = await prisma.user.findUnique({ where: { email } })
+
+  if (existing) {
+    if (existing.role !== 'ADMIN') {
+      console.warn(
+        `Admin: ya existe una cuenta con ${email} y no tiene rol ADMIN. No se modificó.`,
+      )
+      return
+    }
+
+    console.log(`Admin: la cuenta ${email} ya existe, sin cambios.`)
+    return
+  }
+
+  const passwordHash = await bcrypt.hash(password, SALT_ROUNDS)
+  await prisma.user.create({
+    data: { name, email, passwordHash, role: 'ADMIN' },
+  })
+  console.log(`Admin: cuenta ${email} creada correctamente.`)
+}
+
 async function main() {
   for (const type of advisoryTypes) {
     await prisma.advisoryType.upsert({
@@ -34,6 +81,8 @@ async function main() {
 
   const count = await prisma.advisoryType.count()
   console.log(`Seed completado: ${count} especialidades en la base de datos.`)
+
+  await seedAdmin()
 }
 
 main()

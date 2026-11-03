@@ -1,11 +1,17 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.js'
 
 function Register() {
   const { register } = useAuth()
   const navigate = useNavigate()
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'PRODUCER' })
+  const [searchParams] = useSearchParams()
+  const [form, setForm] = useState(() => ({
+    name: '',
+    email: '',
+    password: '',
+    role: searchParams.get('rol') === 'asesor' ? 'ADVISOR' : 'PRODUCER',
+  }))
   const [error, setError] = useState('')
   const [details, setDetails] = useState([])
   const [submitting, setSubmitting] = useState(false)
@@ -36,6 +42,10 @@ function Register() {
   return (
     <section className="section narrow">
       <h2>Crear cuenta</h2>
+      <p className="muted">
+        Tu cuenta incluye 30 días de prueba. En esta versión los pagos son simulados
+        (DEMO) y no se solicitan datos de tarjetas.
+      </p>
       {error && <p className="error">{error}</p>}
       {details.length > 0 && (
         <ul className="error-list">
@@ -47,13 +57,14 @@ function Register() {
       <form className="form" onSubmit={handleSubmit}>
         <label className="field">
           <span>Nombre</span>
-          <input name="name" value={form.name} onChange={handleChange} required />
+          <input name="name" autoComplete="name" value={form.name} onChange={handleChange} required />
         </label>
         <label className="field">
           <span>Correo electrónico</span>
           <input
             type="email"
             name="email"
+            autoComplete="email"
             value={form.email}
             onChange={handleChange}
             required
@@ -64,6 +75,7 @@ function Register() {
           <input
             type="password"
             name="password"
+            autoComplete="new-password"
             value={form.password}
             onChange={handleChange}
             minLength={8}

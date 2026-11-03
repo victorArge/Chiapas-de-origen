@@ -1,7 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { api } from '../services/api.js'
 import { useAuth } from '../hooks/useAuth.js'
 import RequestCard from '../components/RequestCard.jsx'
+import SubscriptionBanner from '../components/SubscriptionBanner.jsx'
+import {
+  documentTypeLabel,
+  documentTypeOptions,
+  statusInfo,
+  verificationStatusInfo,
+} from '../data/subscriptions.js'
+import { formatDateTime, formatFileSize } from '../utils/format.js'
 
 const EMPTY_FORM = {
   description: '',
@@ -23,15 +31,33 @@ function AdvisorPanel() {
   const [details, setDetails] = useState([])
   const [success, setSuccess] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [verificationData, setVerificationData] = useState(null)
+  const [verificationError, setVerificationError] = useState('')
+  const [verificationMessage, setVerificationMessage] = useState('')
+  const [verificationBusy, setVerificationBusy] = useState(false)
+  const [uploadType, setUploadType] = useState('PROFESSIONAL_LICENSE')
+  const [uploadFile, setUploadFile] = useState(null)
+  const fileInputRef = useRef(null)
+
+  async function loadVerification() {
+    const data = await api.get('/advisors/me/verification')
+    setVerificationData(data)
+  }
 
   useEffect(() => {
     let active = true
 
-    Promise.all([api.get('/advisory-types'), api.get('/advisors/me'), api.get('/requests/me')])
-      .then(([advisoryTypes, me, requestList]) => {
+    Promise.all([
+      api.get('/advisory-types'),
+      api.get('/advisors/me'),
+      api.get('/requests/me'),
+      api.get('/advisors/me/verification'),
+    ])
+      .then(([advisoryTypes, me, requestList, verification]) => {
         if (!active) return
         setTypes(advisoryTypes)
         setRequests(requestList.items)
+        setVerificationData(verification)
         if (me.profile) {
           setHasProfile(true)
           setForm({
@@ -81,13 +107,15 @@ function AdvisorPanel() {
     setSubmitting(true)
 
     try {
-      const method = hasProfile ? api.put : api.post
-      const data = await method('/advisors/me', form)
+      const data = hasProfile
+        ? await api.put('/advisors/me', form)
+        : await api.post('/advisors', form)
       setHasProfile(true)
       setForm((current) => ({
         ...current,
         specialtyIds: data.profile.specialties.map((s) => s.id),
       }))
+      await loadVerification()
       setSuccess('Perfil guardado correctamente.')
     } catch (err) {
       setError(err.message)
@@ -109,8 +137,79 @@ function AdvisorPanel() {
     }
   }
 
+  async function handleUpload(event) {
+    event.preventDefault()
+    setVerificationError('')
+    setVerificationMessage('')
+
+    if (!uploadFile) {
+      setVerificationError('Selecciona un archivo PDF, JPG o PNG.')
+      return
+    }
+
+    const formData = new FormData()
+    formData.append('type', uploadType)
+    formData.append('file', uploadFile)
+
+    setVerificationBusy(true)
+
+    try {
+      await api.postForm('/advisors/me/verification/documents', formData)
+      setUploadFile(null)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+      await loadVerification()
+      setVerificationMessage('Documento subido correctamente.')
+    } catch (err) {
+      setVerificationError(err.message)
+    } finally {
+      setVerificationBusy(false)
+    }
+  }
+
+  async function handleDeleteDocument(documentId) {
+    setVerificationError('')
+    setVerificationMessage('')
+    setVerificationBusy(true)
+
+    try {
+      await api.delete(`/advisors/me/verification/documents/${documentId}`)
+      await loadVerification()
+      setVerificationMessage('Documento eliminado.')
+    } catch (err) {
+      setVerificationError(err.message)
+    } finally {
+      setVerificationBusy(false)
+    }
+  }
+
+  async function handleSubmitVerification() {
+    setVerificationError('')
+    setVerificationMessage('')
+    setVerificationBusy(true)
+
+    try {
+      await api.post('/advisors/me/verification/submit', {})
+      await loadVerification()
+      setVerificationMessage('Documentos enviados. Tu verificación está en revisión.')
+    } catch (err) {
+      setVerificationError(err.message)
+    } finally {
+      setVerificationBusy(false)
+    }
+  }
+
   if (status === 'loading') return <p className="section muted">Cargando panel...</p>
   if (status === 'error') return <p className="section error">No se pudo cargar el panel: {error}</p>
+
+  const verification = verificationData?.verification
+  const documents = verificationData?.documents || []
+  const reviews = verificationData?.reviews || []
+  const verificationStatus = statusInfo(
+    verificationStatusInfo,
+    verification?.status || 'NOT_SUBMITTED',
+  )
+  const canEditDocuments =
+    verification?.status !== 'PENDING' && verification?.status !== 'APPROVED'
 
   return (
     <section className="section">
@@ -121,6 +220,8 @@ function AdvisorPanel() {
           : `Completa tu perfil profesional para aparecer en el directorio, ${user?.name}.`}
       </p>
 
+      <SubscriptionBanner />
+
       {success && <p className="success">{success}</p>}
       {error && <p className="error">{error}</p>}
       {details.length > 0 && (
@@ -130,6 +231,144 @@ function AdvisorPanel() {
           ))}
         </ul>
       )}
+
+      <div className="verification-card">
+        <div className="verification-head">
+          <div>
+            <h3 className="panel-subtitle">Verificación profesional</h3>
+            <p className="muted">
+              Sube tu documentación para que un administrador revise tu perfil. La
+              verificación es independiente de tu pago y suscripción.
+            </p>
+          </div>
+          <span className={`status ${verificationStatus.className}`}>
+            {verificationStatus.label}
+          </span>
+        </div>
+
+        {verification?.rejectionReason && (
+          <p className="error">Motivo de rechazo: {verification.rejectionReason}</p>
+        )}
+        {verificationMessage && <p className="success">{verificationMessage}</p>}
+        {verificationError && <p className="error">{verificationError}</p>}
+
+        {!verificationData?.profileComplete ? (
+          <p className="muted">
+            Guarda tu perfil profesional y selecciona al menos una especialidad antes de
+            subir documentos.
+          </p>
+        ) : (
+          <>
+            {documents.length > 0 && (
+              <ul className="document-list">
+                {documents.map((document) => (
+                  <li key={document.id}>
+                    <div>
+                      <strong>{document.originalName}</strong>
+                      <span className="muted">
+                        {documentTypeLabel(document.type)} ·{' '}
+                        {formatFileSize(document.sizeBytes)} ·{' '}
+                        {formatDateTime(document.createdAt)}
+                      </span>
+                    </div>
+                    {canEditDocuments && (
+                      <button
+                        className="btn btn-outline btn-small"
+                        type="button"
+                        onClick={() => handleDeleteDocument(document.id)}
+                        disabled={verificationBusy}
+                      >
+                        Eliminar
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {canEditDocuments && (
+              <form className="upload-form" onSubmit={handleUpload}>
+                <label className="field">
+                  <span>Tipo de documento</span>
+                  <select
+                    value={uploadType}
+                    onChange={(event) => setUploadType(event.target.value)}
+                  >
+                    {documentTypeOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="field">
+                  <span>Archivo (PDF, JPG o PNG, máximo 5 MB)</span>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    onChange={(event) => setUploadFile(event.target.files?.[0] || null)}
+                  />
+                </label>
+
+                <button className="btn btn-outline" type="submit" disabled={verificationBusy}>
+                  {verificationBusy ? 'Subiendo...' : 'Subir documento'}
+                </button>
+              </form>
+            )}
+
+            {verification?.status === 'PENDING' && (
+              <p className="muted">
+                Tu documentación está en revisión. No puedes modificarla mientras esperas
+                la decisión del administrador.
+              </p>
+            )}
+
+            {verification?.status === 'APPROVED' && (
+              <p className="success">
+                Tu verificación fue aprobada. Tu perfil puede mostrarse como verificado
+                cuando tu suscripción esté activa.
+              </p>
+            )}
+
+            {documents.length > 0 &&
+              verification?.status !== 'PENDING' &&
+              verification?.status !== 'APPROVED' && (
+                <button
+                  className="btn btn-primary"
+                  type="button"
+                  onClick={handleSubmitVerification}
+                  disabled={verificationBusy}
+                >
+                  {verificationBusy ? 'Enviando...' : 'Enviar a revisión'}
+                </button>
+              )}
+          </>
+        )}
+
+        {reviews.length > 0 && (
+          <div className="detail-block">
+            <h4>Historial de revisión</h4>
+            <ul className="compact-list">
+              {reviews.map((review) => (
+                <li key={review.id}>
+                  <div>
+                    <strong>
+                      {review.decision === 'APPROVED' ? 'Aprobada' : 'Rechazada'} por{' '}
+                      {review.reviewer?.name || 'Administrador'}
+                    </strong>
+                    <span className="muted">
+                      {formatDateTime(review.createdAt)}
+                      {review.reason ? ` · ${review.reason}` : ''}
+                    </span>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
 
       <div className="panel-grid">
         <div>

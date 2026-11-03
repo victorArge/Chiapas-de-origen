@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { api } from '../services/api.js'
 import { useAuth } from '../hooks/useAuth.js'
 import RequestCard from '../components/RequestCard.jsx'
+import SubscriptionBanner from '../components/SubscriptionBanner.jsx'
 
 function ProducerPanel() {
   const { user } = useAuth()
@@ -34,6 +35,8 @@ function ProducerPanel() {
     <section className="section">
       <h2>Panel del productor</h2>
       <p className="muted">Hola, {user?.name}. Estas son tus solicitudes de asesoría.</p>
+
+      <SubscriptionBanner />
 
       {status === 'loading' && <p className="muted">Cargando solicitudes...</p>}
       {status === 'error' && <p className="error">No se pudieron cargar: {error}</p>}

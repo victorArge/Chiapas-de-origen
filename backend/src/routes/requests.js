@@ -1,6 +1,8 @@
 import { Router } from 'express';
 import { prisma } from '../lib/prisma.js';
 import { authenticate, authorize } from '../middleware/auth.js';
+import { requireActiveSubscription } from '../middleware/subscription.js';
+import { isSubscriptionActive } from '../lib/subscriptions.js';
 import { formatZodError } from '../validators/auth.js';
 import {
   createRequestSchema,
@@ -32,7 +34,7 @@ function toPublicRequest(request) {
   };
 }
 
-router.post('/', authenticate, authorize('PRODUCER'), async (req, res, next) => {
+router.post('/', authenticate, authorize('PRODUCER'), requireActiveSubscription, async (req, res, next) => {
   try {
     const parsed = createRequestSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -41,9 +43,26 @@ router.post('/', authenticate, authorize('PRODUCER'), async (req, res, next) => 
 
     const { advisorProfileId, advisoryTypeId, problemDescription } = parsed.data;
 
-    const advisorProfile = await prisma.advisorProfile.findUnique({ where: { id: advisorProfileId } });
+    const advisorProfile = await prisma.advisorProfile.findUnique({
+      where: { id: advisorProfileId },
+      include: {
+        verification: { select: { status: true } },
+        user: {
+          select: { subscription: { select: { status: true, currentPeriodEnd: true } } },
+        },
+      },
+    });
     if (!advisorProfile) {
       return res.status(404).json({ error: 'Asesor no encontrado' });
+    }
+
+    if (
+      advisorProfile.verification?.status !== 'APPROVED' ||
+      !isSubscriptionActive(advisorProfile.user.subscription)
+    ) {
+      return res.status(409).json({
+        error: 'El asesor no está disponible para recibir solicitudes en este momento.',
+      });
     }
 
     const offers = await prisma.advisorSpecialty.findUnique({
@@ -71,7 +90,7 @@ router.post('/', authenticate, authorize('PRODUCER'), async (req, res, next) => 
   }
 });
 
-router.get('/me', authenticate, async (req, res, next) => {
+router.get('/me', authenticate, requireActiveSubscription, async (req, res, next) => {
   try {
     let where;
 
@@ -99,7 +118,7 @@ router.get('/me', authenticate, async (req, res, next) => {
   }
 });
 
-router.patch('/:id/status', authenticate, authorize('ADVISOR'), async (req, res, next) => {
+router.patch('/:id/status', authenticate, authorize('ADVISOR'), requireActiveSubscription, async (req, res, next) => {
   try {
     const parsed = updateStatusSchema.safeParse(req.body);
     if (!parsed.success) {

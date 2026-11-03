@@ -23,6 +23,43 @@ enum RequestStatus {
   FINISHED
 }
 
+enum SubscriptionPlan {
+  PRODUCER_MONTHLY
+  ADVISOR_MONTHLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PaymentType {
+  INITIAL
+  RENEWAL
+}
+
+enum VerificationStatus {
+  NOT_SUBMITTED
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum DocumentType {
+  IDENTIFICATION
+  PROOF_OF_STUDIES
+  PROFESSIONAL_LICENSE
+  CERTIFICATE
+  OTHER
+}
+
 model User {
   id           String   @id @default(cuid())
   name         String
@@ -32,8 +69,12 @@ model User {
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  advisorProfile AdvisorProfile?
-  requests       AdvisoryRequest[] @relation("RequesterRequests")
+  advisorProfile      AdvisorProfile?
+  requests            AdvisoryRequest[]     @relation("RequesterRequests")
+  subscription        Subscription?
+  payments            Payment[]
+  verificationReviews AdvisorVerification[] @relation("VerificationReviews")
+  reviewHistory       VerificationReview[]  @relation("VerificationReviewHistory")
 
   @@map("users")
 }
@@ -49,9 +90,10 @@ model AdvisorProfile {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
-  user        User               @relation(fields: [userId], references: [id], onDelete: Cascade)
-  specialties AdvisorSpecialty[]
-  requests    AdvisoryRequest[]
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  specialties  AdvisorSpecialty[]
+  requests     AdvisoryRequest[]
+  verification AdvisorVerification?
 
   @@map("advisor_profiles")
 }
@@ -93,4 +135,98 @@ model AdvisoryRequest {
   advisoryType   AdvisoryType   @relation(fields: [advisoryTypeId], references: [id])
 
   @@map("advisory_requests")
+}
+
+model Subscription {
+  id                 String             @id @default(cuid())
+  userId             String             @unique
+  plan               SubscriptionPlan
+  priceMxn           Int
+  status             SubscriptionStatus @default(ACTIVE)
+  isTrial            Boolean            @default(false)
+  trialEndsAt        DateTime?
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@index([status])
+  @@map("subscriptions")
+}
+
+model Payment {
+  id             String        @id @default(cuid())
+  userId         String
+  subscriptionId String?
+  amountMxn      Int
+  currency       String        @default("MXN")
+  status         PaymentStatus @default(PENDING)
+  type           PaymentType   @default(INITIAL)
+  reference      String        @unique
+  failureReason  String?
+  confirmedAt    DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscription Subscription? @relation(fields: [subscriptionId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([userId])
+  @@map("payments")
+}
+
+model AdvisorVerification {
+  id               String             @id @default(cuid())
+  advisorProfileId String             @unique
+  status           VerificationStatus @default(NOT_SUBMITTED)
+  rejectionReason  String?
+  submittedAt      DateTime?
+  reviewedAt       DateTime?
+  reviewedById     String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  advisorProfile AdvisorProfile       @relation(fields: [advisorProfileId], references: [id], onDelete: Cascade)
+  reviewedBy     User?                @relation("VerificationReviews", fields: [reviewedById], references: [id], onDelete: SetNull)
+  documents      AdvisorDocument[]
+  reviews        VerificationReview[]
+
+  @@index([status])
+  @@map("advisor_verifications")
+}
+
+model AdvisorDocument {
+  id             String       @id @default(cuid())
+  verificationId String
+  type           DocumentType @default(OTHER)
+  originalName   String
+  storedName     String
+  mimeType       String
+  sizeBytes      Int
+  storagePath    String
+  createdAt      DateTime     @default(now())
+
+  verification AdvisorVerification @relation(fields: [verificationId], references: [id], onDelete: Cascade)
+
+  @@index([verificationId])
+  @@map("advisor_documents")
+}
+
+model VerificationReview {
+  id             String             @id @default(cuid())
+  verificationId String
+  reviewerId     String
+  decision       VerificationStatus
+  reason         String?
+  createdAt      DateTime           @default(now())
+
+  verification AdvisorVerification @relation(fields: [verificationId], references: [id], onDelete: Cascade)
+  reviewer     User                @relation("VerificationReviewHistory", fields: [reviewerId], references: [id], onDelete: Restrict)
+
+  @@index([verificationId])
+  @@map("verification_reviews")
 }

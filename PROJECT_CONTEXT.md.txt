@@ -176,3 +176,118 @@ Comenzar únicamente con la inspección inicial:
 5. Reportar errores encontrados y proponer los siguientes pasos.
 
 No comenzar cambios importantes ni implementar la base de datos hasta terminar la inspección y presentar los resultados.
+
+ULTIMOS CAMBIOS:
+Quiero actualizar los requisitos de mi aplicación "Chiapas de origen". Estas decisiones ya están confirmadas y deben considerarse la especificación funcional del proyecto.
+
+## 1. Modelo de negocio
+
+La plataforma utilizará suscripciones mensuales.
+
+- Agricultores: $300 MXN por mes.
+- Asesores agronómicos: $600 MXN por mes.
+- Durante el desarrollo universitario, todos los pagos serán simulados.
+- No se realizarán cobros reales ni se solicitarán datos reales de tarjetas.
+- Para la primera versión, cada periodo de prueba durará 30 días.
+- El sistema debe permitir simular una renovación y comprobar el vencimiento de las suscripciones.
+
+Muestra los precios en MXN y explica claramente que el pago es una simulación de prueba.
+
+## 2. Agricultores
+
+Los agricultores podrán acceder a todas las funcionalidades definidas para su rol cuando tengan una suscripción activa.
+
+Entre ellas:
+- Consultar las cuatro especialidades agronómicas.
+- Buscar asesores.
+- Filtrar por especialidad, estado y municipio.
+- Consultar perfiles profesionales.
+- Enviar solicitudes de asesoría.
+- Consultar el estado de sus solicitudes.
+- Administrar sus datos y consultar su suscripción.
+
+No limites artificialmente estas funciones por el plan, porque inicialmente solo habrá un plan para agricultores.
+
+## 3. Asesores
+
+Los asesores pagarán $600 MXN mensuales y deberán completar su perfil, seleccionar especialidades y subir documentación para revisión administrativa.
+
+El perfil público solo podrá aparecer como verificado después de que un administrador apruebe la documentación.
+
+Mantén independientes estos estados:
+
+- Estado del pago.
+- Estado de la suscripción.
+- Estado de la verificación profesional.
+
+Un pago aprobado no significa que el asesor esté verificado.
+
+Para habilitar el perfil profesional, comprueba que la suscripción esté activa y que la verificación haya sido aprobada.
+
+## 4. Administrador
+
+El rol ADMINISTRADOR tendrá acceso a un panel privado para:
+
+- Consultar usuarios.
+- Revisar documentos profesionales.
+- Aprobar o rechazar verificaciones.
+- Registrar motivos de rechazo.
+- Consultar suscripciones.
+- Consultar pagos simulados.
+- Revisar y administrar cuentas cuando corresponda.
+
+El rol de administrador no debe poder seleccionarse en el registro público.
+
+Comprueba los permisos en el backend. Ocultar botones en el frontend no es suficiente.
+
+## 5. Pagos simulados
+
+Implementa un flujo de demostración que permita:
+
+1. Consultar el precio del plan.
+2. Iniciar el pago simulado.
+3. Confirmar o rechazar la operación de prueba.
+4. Guardar el registro en la base de datos.
+5. Activar la suscripción únicamente cuando la operación simulada se confirme correctamente.
+6. Calcular la fecha de vencimiento.
+7. Consultar el estado de la suscripción.
+8. Simular una renovación sin procesar dinero real.
+
+Identifica claramente el entorno como DEMO. No almacenes información de tarjetas ni permitas que el usuario active una suscripción modificando únicamente el frontend.
+
+## 6. Documentación profesional
+
+Guarda los documentos en almacenamiento privado y controla el acceso desde el backend.
+
+Permite que los administradores autorizados consulten los documentos y registren sus decisiones. Los agricultores no deben poder acceder a ellos.
+
+Registra quién realizó cada revisión y cuándo.
+
+## 7. Diseño visual
+
+Utiliza esta paleta:
+
+- Verde salvia: #4A7C59.
+- Crema banana: #FFF8E1.
+- Amarillo banana: #FFD84D.
+- Verde oscuro: #263D2D.
+- Blanco: #FFFFFF.
+- Gris verdoso: #E5EAE4.
+
+Aplica los colores de forma consistente en la página principal, formularios, tarjetas, botones, paneles y estados de las suscripciones.
+
+Conserva el nombre "Chiapas de origen", las imágenes existentes y las cuatro especialidades agronómicas.
+
+## 8. Forma de trabajo
+
+Antes de modificar el código, inspecciona el proyecto actual y prepara un plan incremental.
+
+No reconstruyas la aplicación desde cero ni elimines funciones existentes. Reutiliza los modelos y componentes que ya funcionen.
+
+No realices migraciones destructivas ni borres datos sin autorización.
+
+Primero presenta el estado actual del proyecto, los cambios necesarios y el orden recomendado de implementación. Espera mi aprobación antes de comenzar a modificar archivos.
+
+Después, desarrolla una etapa a la vez, ejecuta pruebas reales e informa qué archivos cambiaste y qué verificaste.
+
+No integres pagos reales en esta versión.

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { prisma } from '../lib/prisma.js';
 import { registerSchema, loginSchema, formatZodError } from '../validators/auth.js';
 import { authenticate } from '../middleware/auth.js';
+import { ensureSubscription } from '../lib/subscriptions.js';
 
 const router = Router();
 const SALT_ROUNDS = 10;
@@ -42,6 +43,8 @@ router.post('/register', async (req, res, next) => {
     const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
     const user = await prisma.user.create({ data: { name, email, passwordHash, role } });
 
+    await ensureSubscription(user.id, user.role);
+
     res.status(201).json({ token: signToken(user), user: publicUser(user) });
   } catch (error) {
     next(error);
@@ -62,6 +65,8 @@ router.post('/login', async (req, res, next) => {
       return res.status(401).json({ error: 'Credenciales incorrectas' });
     }
 
+    await ensureSubscription(user.id, user.role);
+
     res.json({ token: signToken(user), user: publicUser(user) });
   } catch (error) {
     next(error);
@@ -74,6 +79,9 @@ router.get('/me', authenticate, async (req, res, next) => {
     if (!user) {
       return res.status(404).json({ error: 'Usuario no encontrado' });
     }
+
+    await ensureSubscription(user.id, user.role);
+
     res.json({ user: publicUser(user) });
   } catch (error) {
     next(error);

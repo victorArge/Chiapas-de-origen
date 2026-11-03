@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 640" role="img" aria-labelledby="heroTitle heroDesc">
+  <title id="heroTitle">Plantación de plátano</title>
+  <desc id="heroDesc">Ilustración de una plantación de plátano en Chiapas con hojas verdes y colinas al fondo.</desc>
+
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6fbf6" />
+      <stop offset="1" stop-color="#dff0e5" />
+    </linearGradient>
+    <linearGradient id="leafLight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3aa15f" />
+      <stop offset="1" stop-color="#26804a" />
+    </linearGradient>
+    <linearGradient id="leafMid" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2f8f52" />
+      <stop offset="1" stop-color="#1f6f40" />
+    </linearGradient>
+    <linearGradient id="leafDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#256f42" />
+      <stop offset="1" stop-color="#17663a" />
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="640" fill="url(#sky)" />
+  <circle cx="640" cy="150" r="86" fill="#ffffff" opacity="0.55" />
+  <circle cx="640" cy="150" r="52" fill="#fff4d6" opacity="0.85" />
+
+  <path d="M0 372 C 150 318 300 356 430 336 C 570 314 690 356 800 330 L800 640 L0 640 Z" fill="#d3ead9" />
+  <path d="M0 448 C 180 410 340 452 520 430 C 640 416 730 442 800 426 L800 640 L0 640 Z" fill="#b7ddc4" />
+
+  <g opacity="0.9">
+    <path d="M150 470 c 14 -50 18 -110 0 -170 c -18 60 -14 120 0 170 Z" fill="url(#leafMid)" transform="rotate(-55 150 470)" />
+    <path d="M150 470 c 14 -50 18 -110 0 -170 c -18 60 -14 120 0 170 Z" fill="url(#leafDark)" transform="rotate(-90 150 470)" />
+    <path d="M150 470 c 14 -50 18 -110 0 -170 c -18 60 -14 120 0 170 Z" fill="url(#leafMid)" transform="rotate(-125 150 470)" />
+  </g>
+
+  <g>
+    <ellipse cx="300" cy="614" rx="130" ry="20" fill="#1f6f40" opacity="0.16" />
+    <path d="M300 605 c 20 -70 26 -160 0 -250 c -26 90 -20 180 0 250 Z" fill="url(#leafLight)" transform="rotate(-70 300 605)" />
+    <path d="M300 605 c 20 -70 26 -160 0 -250 c -26 90 -20 180 0 250 Z" fill="url(#leafMid)" transform="rotate(-35 300 605)" />
+    <path d="M300 605 c 20 -70 26 -160 0 -250 c -26 90 -20 180 0 250 Z" fill="url(#leafLight)" transform="rotate(0 300 605)" />
+    <path d="M300 605 c 20 -70 26 -160 0 -250 c -26 90 -20 180 0 250 Z" fill="url(#leafMid)" transform="rotate(35 300 605)" />
+    <path d="M300 605 c 20 -70 26 -160 0 -250 c -26 90 -20 180 0 250 Z" fill="url(#leafDark)" transform="rotate(70 300 605)" />
+    <path d="M300 605 c 8 -50 10 -110 0 -170" stroke="#17663a" stroke-width="3" fill="none" opacity="0.5" />
+  </g>
+
+  <g>
+    <ellipse cx="520" cy="618" rx="150" ry="22" fill="#1f6f40" opacity="0.18" />
+    <path d="M520 606 c 24 -80 30 -190 0 -290 c -30 100 -24 210 0 290 Z" fill="url(#leafMid)" transform="rotate(-75 520 606)" />
+    <path d="M520 606 c 24 -80 30 -190 0 -290 c -30 100 -24 210 0 290 Z" fill="url(#leafLight)" transform="rotate(-40 520 606)" />
+    <path d="M520 606 c 24 -80 30 -190 0 -290 c -30 100 -24 210 0 290 Z" fill="url(#leafMid)" transform="rotate(-5 520 606)" />
+    <path d="M520 606 c 24 -80 30 -190 0 -290 c -30 100 -24 210 0 290 Z" fill="url(#leafDark)" transform="rotate(30 520 606)" />
+    <path d="M520 606 c 24 -80 30 -190 0 -290 c -30 100 -24 210 0 290 Z" fill="url(#leafMid)" transform="rotate(65 520 606)" />
+    <path d="M520 606 c 24 -80 30 -190 0 -290 c -30 100 -24 210 0 290 Z" fill="url(#leafLight)" transform="rotate(100 520 606)" />
+    <path d="M520 606 c 10 -60 12 -130 0 -200" stroke="#17663a" stroke-width="4" fill="none" opacity="0.45" />
+  </g>
+
+  <g opacity="0.7">
+    <circle cx="120" cy="210" r="6" fill="#3aa15f" />
+    <circle cx="210" cy="150" r="4" fill="#26804a" />
+    <circle cx="700" cy="300" r="5" fill="#3aa15f" />
+    <circle cx="620" cy="250" r="3.5" fill="#26804a" />
+  </g>
+</svg>

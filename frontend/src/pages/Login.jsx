@@ -22,7 +22,12 @@ function Login() {
 
     try {
       const user = await login(form.email, form.password)
-      const fallback = user.role === 'ADVISOR' ? '/panel/asesor' : '/panel/productor'
+      const fallback =
+        user.role === 'ADMIN'
+          ? '/panel/admin'
+          : user.role === 'ADVISOR'
+            ? '/panel/asesor'
+            : '/panel/productor'
       navigate(location.state?.from || fallback, { replace: true })
     } catch (err) {
       setError(err.message)
@@ -41,6 +46,7 @@ function Login() {
           <input
             type="email"
             name="email"
+            autoComplete="email"
             value={form.email}
             onChange={handleChange}
             required
@@ -51,6 +57,7 @@ function Login() {
           <input
             type="password"
             name="password"
+            autoComplete="current-password"
             value={form.password}
             onChange={handleChange}
             required

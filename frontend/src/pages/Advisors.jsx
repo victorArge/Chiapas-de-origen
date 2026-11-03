@@ -1,32 +1,40 @@
 import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { api } from '../services/api.js'
+import { useAdvisoryTypes } from '../hooks/useAdvisoryTypes.js'
 
 const EMPTY_FILTERS = { specialty: '', state: '', municipality: '', q: '' }
 
-function buildQuery(filters) {
-  const params = new URLSearchParams()
+function readFilters(params) {
+  return {
+    specialty: params.get('specialty') || '',
+    state: params.get('state') || '',
+    municipality: params.get('municipality') || '',
+    q: params.get('q') || '',
+  }
+}
+
+function buildParams(filters) {
+  const params = {}
   Object.entries(filters).forEach(([key, value]) => {
-    if (value.trim()) params.set(key, value.trim())
+    if (value.trim()) params[key] = value.trim()
   })
-  const query = params.toString()
+  return params
+}
+
+function buildQuery(filters) {
+  const query = new URLSearchParams(buildParams(filters)).toString()
   return query ? `?${query}` : ''
 }
 
 function Advisors() {
-  const [draft, setDraft] = useState(EMPTY_FILTERS)
-  const [filters, setFilters] = useState(EMPTY_FILTERS)
-  const [types, setTypes] = useState([])
+  const types = useAdvisoryTypes()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [draft, setDraft] = useState(() => readFilters(searchParams))
+  const [filters, setFilters] = useState(() => readFilters(searchParams))
   const [items, setItems] = useState([])
   const [status, setStatus] = useState('loading')
   const [error, setError] = useState('')
-
-  useEffect(() => {
-    api
-      .get('/advisory-types')
-      .then(setTypes)
-      .catch(() => setTypes([]))
-  }, [])
 
   useEffect(() => {
     let active = true
@@ -58,7 +66,8 @@ function Advisors() {
     event.preventDefault()
     setError('')
     setStatus('loading')
-    setFilters(draft)
+    setSearchParams(buildParams(draft))
+    setFilters({ ...EMPTY_FILTERS, ...draft })
   }
 
   return (
@@ -116,6 +125,11 @@ function Advisors() {
               {items.map((profile) => (
                 <article className="card" key={profile.id}>
                   <h3>{profile.name}</h3>
+                  {profile.verified && (
+                    <p>
+                      <span className="status status-approved">Asesor verificado</span>
+                    </p>
+                  )}
                   <p className="card-meta">
                     {profile.municipality}, {profile.state}
                   </p>
