@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+﻿import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import Layout from './components/Layout.jsx'
 import ProtectedRoute from './components/ProtectedRoute.jsx'
 import SubscriptionGate from './components/SubscriptionGate.jsx'
@@ -84,6 +84,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route path="/admin" element={<Navigate to="/panel/admin" replace />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
