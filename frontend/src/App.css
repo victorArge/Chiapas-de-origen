@@ -632,7 +632,73 @@
 
 .advisor-search {
   margin-top: 40px;
-}/* ---------- Professionals ---------- */
+}
+
+/* ---------- Advisor lock ---------- */
+
+.advisor-lock {
+  max-width: 680px;
+  margin: 40px auto 0;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--white);
+  box-shadow: 0 10px 30px rgba(38, 61, 45, 0.08);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.advisor-lock-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--green-100);
+  color: var(--green-700);
+}
+
+.advisor-lock-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+.advisor-lock h3 {
+  margin: 0;
+}
+
+.advisor-lock > p {
+  margin: 0;
+  color: var(--text-soft);
+}
+
+.advisor-lock-message {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.advisor-lock-price {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--green-900);
+}
+
+.advisor-lock-duration {
+  margin-top: -8px;
+}
+
+.advisor-lock-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* ---------- Professionals ---------- */
 
 .pro-section {
   padding: 8px 24px 72px;

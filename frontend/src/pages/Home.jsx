@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom'
 import { specialties } from '../data/specialties.js'
 import { useAdvisoryTypes } from '../hooks/useAdvisoryTypes.js'
 import { usePlans } from '../hooks/usePlans.js'
+import { useAuth } from '../hooks/useAuth.js'
+import { useSubscription } from '../hooks/useSubscription.js'
 import { formatCurrency } from '../utils/format.js'
 import {
   PlantIcon,
@@ -14,6 +16,7 @@ import {
   RequestIcon,
   AdviceIcon,
   CheckIcon,
+  LockIcon,
 } from '../components/Icons.jsx'
 import portadaPlatanos from '../../../imagenes/portada_platano.jpeg'
 import encuentraAsesor from '../../../imagenes/encuentra un asesor.jpeg'
@@ -47,7 +50,20 @@ function Home() {
   const navigate = useNavigate()
   const types = useAdvisoryTypes()
   const { items: plans, trialDays, notice } = usePlans()
+  const { user } = useAuth()
+  const { subscription, loading: subscriptionLoading } = useSubscription()
   const [search, setSearch] = useState({ specialty: '', state: '', municipality: '' })
+
+  const advisorAccessResolved = !subscriptionLoading
+  const advisorCanAccessCatalog =
+    advisorAccessResolved &&
+    user?.role === 'PRODUCER' &&
+    Boolean(subscription?.isActive)
+
+  const advisorSectionVisible =
+    user?.role !== 'ADVISOR' && user?.role !== 'ADMIN'
+
+  const advisorCatalogLocked = !advisorCanAccessCatalog && advisorSectionVisible
 
   const handleSearchChange = (event) => {
     const { name, value } = event.target
@@ -162,18 +178,18 @@ function Home() {
         <div className="advisor-grid">
           <div className="advisor-copy">
             <p className="eyebrow">Encuentra un asesor</p>
-            <h2>¿Buscas un asesor para cuidar tu cultivo?</h2>
+            <h2>Encuentra al especialista que tu cultivo necesita</h2>
             <p>
-              Comparte la zona de tu finca y la etapa del cultivo que requiera
-              atención, y recibe contactos con profesionales de la asesoría
-              agronómica disponibles para el plátano.
+              Conecta con profesionales especializados en el cultivo de plátano y
+              recibe orientación técnica para mejorar la salud y productividad de tu
+              plantación.
             </p>
             <div className="hero-actions">
               <Link className="btn btn-primary" to="/asesores">
                 Buscar asesores
               </Link>
               <Link className="btn btn-outline" to="/especialidades">
-                Ver especialidades
+                Conoce nuestras especialidades
               </Link>
             </div>
           </div>
@@ -187,45 +203,83 @@ function Home() {
           </div>
         </div>
 
-        <div className="advisor-search">
-          <form className="search-box" onSubmit={handleSearch}>
-            <label className="field">
-              <span>Especialidad</span>
-              <select name="specialty" value={search.specialty} onChange={handleSearchChange}>
-                <option value="">Todas</option>
-                {types.map((type) => (
-                  <option key={type.id} value={type.id}>
-                    {type.name}
-                  </option>
-                ))}
-              </select>
-            </label>
+        {advisorCatalogLocked ? (
+          <div className="advisor-lock">
+            <span className="advisor-lock-icon" aria-hidden="true">
+              <LockIcon />
+            </span>
+            <h3>Desbloquea el acceso a nuestros asesores</h3>
+            <p>
+              Suscríbete para encontrar profesionales especializados en el cultivo
+              de plátano, consultar sus perfiles y solicitar asesoría técnica.
+            </p>
+            <p className="advisor-lock-message">Contenido exclusivo para agricultores suscritos</p>
+            {user?.role === 'PRODUCER' && subscription?.status === 'EXPIRED' ? (
+              <Link className="btn btn-primary" to="/suscripcion">
+                Renovar suscripción
+              </Link>
+            ) : user ? (
+              <>
+                <p className="advisor-lock-price">$300 MXN</p>
+                <p className="advisor-lock-duration">30 días</p>
+                <Link className="btn btn-primary" to="/suscripcion">
+                  Suscribirte para tener acceso a este menú
+                </Link>
+              </>
+            ) : (
+              <div className="advisor-lock-actions">
+                <Link className="btn btn-outline" to="/login">
+                  Iniciar sesión
+                </Link>
+                <Link className="btn btn-outline" to="/registro?rol=productor">
+                  Registrarme
+                </Link>
+              </div>
+            )}
+          </div>
+        ) : (
+          advisorCanAccessCatalog && (
+            <div className="advisor-search">
+              <form className="search-box" onSubmit={handleSearch}>
+                <label className="field">
+                  <span>Especialidad</span>
+                  <select name="specialty" value={search.specialty} onChange={handleSearchChange}>
+                    <option value="">Todas</option>
+                    {types.map((type) => (
+                      <option key={type.id} value={type.id}>
+                        {type.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-            <label className="field">
-              <span>Estado</span>
-              <input
-                name="state"
-                value={search.state}
-                onChange={handleSearchChange}
-                placeholder="Ej. Chiapas"
-              />
-            </label>
+                <label className="field">
+                  <span>Estado</span>
+                  <input
+                    name="state"
+                    value={search.state}
+                    onChange={handleSearchChange}
+                    placeholder="Ej. Chiapas"
+                  />
+                </label>
 
-            <label className="field">
-              <span>Municipio</span>
-              <input
-                name="municipality"
-                value={search.municipality}
-                onChange={handleSearchChange}
-                placeholder="Ej. Tapachula"
-              />
-            </label>
+                <label className="field">
+                  <span>Municipio</span>
+                  <input
+                    name="municipality"
+                    value={search.municipality}
+                    onChange={handleSearchChange}
+                    placeholder="Ej. Tapachula"
+                  />
+                </label>
 
-            <button className="btn btn-primary search-submit" type="submit">
-              <SearchIcon /> Buscar
-            </button>
-          </form>
-        </div>
+                <button className="btn btn-primary search-submit" type="submit">
+                  <SearchIcon /> Buscar
+                </button>
+              </form>
+            </div>
+          )
+        )}
       </section>
 
       <section className="section">
