@@ -1,9 +1,9 @@
-import { Router } from 'express'
+﻿import { Router } from 'express'
 import { existsSync } from 'node:fs'
 import { prisma } from '../lib/prisma.js'
 import { authenticate, authorize } from '../middleware/auth.js'
 import { resolveStoragePath, serializeDocument } from '../lib/storage.js'
-import { DEMO_NOTICE } from '../lib/plans.js'
+import { PAYMENT_NOTICE } from '../lib/plans.js'
 import { serializePayment } from '../lib/payments.js'
 import {
   isSubscriptionActive,
@@ -125,7 +125,7 @@ router.get('/overview', async (req, res, next) => {
 
     res.json({
       demo: true,
-      notice: DEMO_NOTICE,
+      notice: PAYMENT_NOTICE,
       generatedAt: now,
       users: { total: usersTotal, producers, advisors, admins },
       subscriptions: {
@@ -232,7 +232,7 @@ router.get('/subscriptions', async (req, res, next) => {
 
     res.json({
       demo: true,
-      notice: DEMO_NOTICE,
+      notice: PAYMENT_NOTICE,
       total: subscriptions.length,
       items: subscriptions.map((subscription) => ({
         ...serializeSubscription(subscription),
@@ -265,7 +265,7 @@ router.get('/payments', async (req, res, next) => {
 
     res.json({
       demo: true,
-      notice: DEMO_NOTICE,
+      notice: PAYMENT_NOTICE,
       total: payments.length,
       items: payments.map((payment) => ({
         ...serializePayment(payment),

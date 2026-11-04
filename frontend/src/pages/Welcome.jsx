@@ -65,7 +65,7 @@ function Welcome() {
             <p className="eyebrow">Asesor agronómico</p>
             <h2>Estás dentro del proceso de activación</h2>
             <p>
-              Tu pago fue registrado correctamente. Estamos esperando la revisión de tu
+              La simulación académica quedó registrada. Estamos esperando la revisión de tu
               documentación profesional para habilitar el panel profesional.
             </p>
             <p className="advisor-lock-message">Contenido exclusivo para agricultores suscritos</p>
@@ -111,7 +111,7 @@ function Welcome() {
                 type="button"
                 onClick={() => navigate('/suscripcion')}
               >
-                Continuar con el pago simulado
+                Continuar con la simulación de pago
               </button>
             </div>
           </div>

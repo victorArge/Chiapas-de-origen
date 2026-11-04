@@ -199,8 +199,7 @@ function AdminPanel() {
           <p className="eyebrow">Administración</p>
           <h2>Panel administrador</h2>
           <p className="muted">
-            Hola, {user?.name}. Revisa verificaciones, cuentas, suscripciones y pagos
-            simulados.
+            Hola, {user?.name}. Revisa verificaciones, cuentas, suscripciones y pagos.
           </p>
         </div>
         <button className="btn btn-outline" type="button" onClick={loadAll}>
@@ -236,7 +235,7 @@ function AdminPanel() {
             <Stat
               label="Usuarios"
               value={overview.users.total}
-              note={`${overview.users.producers} productores · ${overview.users.advisors} asesores`}
+              note={`${overview.users.producers} productores ${overview.users.advisors} asesores`}
             />
             <Stat
               label="Suscripciones activas"
@@ -249,9 +248,9 @@ function AdminPanel() {
               note={`${overview.verifications.approved} aprobadas`}
             />
             <Stat
-              label="Pagos aprobados DEMO"
+              label="Simulaciones aprobadas"
               value={formatCurrency(overview.payments.approvedAmountMxn)}
-              note={`${overview.payments.approved} operaciones simuladas`}
+              note={`${overview.payments.approved} operaciones de demostración`}
             />
           </div>
 
@@ -284,7 +283,7 @@ function AdminPanel() {
             <div>
               <h3 className="panel-subtitle">Últimos pagos</h3>
               {payments.length === 0 ? (
-                <p className="muted">Todavía no hay pagos simulados.</p>
+                <p className="muted">Todavía no hay pagos registrados.</p>
               ) : (
                 <ul className="compact-list">
                   {payments.slice(0, 5).map((payment) => {
@@ -294,7 +293,7 @@ function AdminPanel() {
                         <div>
                           <strong>{payment.user.name}</strong>
                           <span className="muted">
-                            {formatCurrency(payment.amountMxn)} · {paymentTypeInfo[payment.type]}
+                            {formatCurrency(payment.amountMxn)} {paymentTypeInfo[payment.type]}
                           </span>
                         </div>
                         <span className={`status ${paymentStatus.className}`}>
@@ -340,7 +339,7 @@ function AdminPanel() {
                       <div>
                         <h3>{item.advisor.name}</h3>
                         <p className="card-meta">
-                          {item.advisor.email} · {item.advisor.municipality},{' '}
+                          {item.advisor.email} {item.advisor.municipality},{' '}
                           {item.advisor.state}
                         </p>
                       </div>
@@ -371,7 +370,7 @@ function AdminPanel() {
                               <div>
                                 <strong>{document.originalName}</strong>
                                 <span className="muted">
-                                  {formatFileSize(document.sizeBytes)} ·{' '}
+                                  {formatFileSize(document.sizeBytes)} {' '}
                                   {formatDate(document.createdAt)}
                                 </span>
                               </div>
@@ -454,7 +453,7 @@ function AdminPanel() {
                                 </strong>
                                 <span className="muted">
                                   {formatDateTime(review.createdAt)}
-                                  {review.reason ? ` · ${review.reason}` : ''}
+                                  {review.reason ? ` ${review.reason}` : ''}
                                 </span>
                               </div>
                             </li>
@@ -529,8 +528,7 @@ function AdminPanel() {
                               {subscriptionStatus.label}
                             </span>
                             <span className="cell-note">
-                              {item.subscription.isTrial ? 'Prueba' : 'Plan'} ·{' '}
-                              {item.subscription.daysRemaining} días
+                              {item.subscription.isTrial ? 'Prueba' : 'Plan'} {item.subscription.daysRemaining} días
                             </span>
                           </>
                         ) : (
@@ -595,7 +593,7 @@ function AdminPanel() {
                       <td>
                         <strong>{item.user.name}</strong>
                         <span className="cell-note">
-                          {item.user.email} · {item.user.role}
+                          {item.user.email} {item.user.role}
                         </span>
                       </td>
                       <td>
@@ -610,7 +608,7 @@ function AdminPanel() {
                         </span>
                       </td>
                       <td>
-                        {formatDate(item.currentPeriodStart)} —{' '}
+                        {formatDate(item.currentPeriodStart)} -{' '}
                         {formatDate(item.currentPeriodEnd)}
                         <span className="cell-note">{item.daysRemaining} días restantes</span>
                       </td>

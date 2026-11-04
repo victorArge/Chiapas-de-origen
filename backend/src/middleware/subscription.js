@@ -1,5 +1,5 @@
 ﻿import { ensureSubscription, isSubscriptionActive, serializeSubscription } from '../lib/subscriptions.js'
-import { DEMO_NOTICE } from '../lib/plans.js'
+import { PAYMENT_NOTICE } from '../lib/plans.js'
 
 export async function requireActiveSubscription(req, res, next) {
   try {
@@ -14,7 +14,7 @@ export async function requireActiveSubscription(req, res, next) {
         error: 'Tu suscripción no está activa. Renueva para continuar.',
         code: 'SUBSCRIPTION_REQUIRED',
         demo: true,
-        notice: DEMO_NOTICE,
+        notice: PAYMENT_NOTICE,
         subscription: serializeSubscription(subscription),
       })
     }

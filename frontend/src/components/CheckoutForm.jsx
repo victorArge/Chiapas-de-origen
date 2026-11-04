@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 
 function CheckoutForm({
   card,
@@ -38,7 +38,7 @@ function CheckoutForm({
       noValidate
     >
       <label className="field" htmlFor="checkout-holder">
-        <span>Titular de la tarjeta</span>
+        <span>Titular de la tarjeta de prueba</span>
         <input
           id="checkout-holder"
           name="holderName"
@@ -58,7 +58,7 @@ function CheckoutForm({
       </label>
 
       <label className="field" htmlFor="checkout-card-number">
-        <span>Número de tarjeta</span>
+        <span>Número de tarjeta de prueba</span>
         <input
           id="checkout-card-number"
           name="cardNumber"
@@ -129,7 +129,7 @@ function CheckoutForm({
 
       {onReject && (
         <button className="btn btn-outline btn-block" type="button" onClick={onReject} disabled={processing}>
-          Rechazar pago simulado
+          Rechazar simulación
         </button>
       )}
 

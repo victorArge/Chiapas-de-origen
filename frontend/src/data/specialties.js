@@ -1,7 +1,7 @@
-﻿import establecimientoImage from '../../../imagenes/Establecimiento.jpeg'
-import plagasEnfermedadesImage from '../../../imagenes/plagas y enfermedades.jpeg'
-import aguaRiegoImage from '../../../imagenes/Agua y riego.jpeg'
-import nutricionFertilizacionImage from '../../../imagenes/Nutrición y fertilización.jpeg'
+const establecimientoImage = '/images/Establecimiento.jpeg'
+const plagasEnfermedadesImage = '/images/plagas y enfermedades.jpeg'
+const aguaRiegoImage = '/images/Agua y riego.jpeg'
+const nutricionFertilizacionImage = '/images/Nutrición y fertilización.jpeg'
 
 export const specialties = [
   {

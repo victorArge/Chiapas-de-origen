@@ -40,10 +40,9 @@ function PaymentResult({
           <circle cx="12" cy="12" r="10" />
           <path d="M8 12.5l2.5 2.5L16 9.5" />
         </svg>
-        <h3>Pago aprobado</h3>
+        <h3>Simulación aprobada</h3>
         <p>
-          Tu suscripción fue activada correctamente. El pago confirmado es una simulación
-          de demostración.
+          La simulación quedó registrada y tu suscripción está activa en este entorno académico.
         </p>
 
         <dl className="detail-list">
@@ -91,12 +90,12 @@ function PaymentResult({
 
   if (status === 'RECHAZADO' || result?.payment?.status === 'RECHAZADO') {
     const payment = result?.payment
-    const reason = payment?.failureReason || 'Operación rechazada manualmente en el entorno DEMO.'
+    const reason = payment?.failureReason || 'Operación rechazada manualmente.'
 
     return (
       <div className="payment-result">
-        <h3>Pago rechazado</h3>
-        <p>El pago simulado fue rechazado.</p>
+        <h3>Simulación rechazada</h3>
+        <p>La simulación quedó registrada como rechazada.</p>
         <p>Motivo: {reason}</p>
         <p>La suscripción no se activó con este intento.</p>
 

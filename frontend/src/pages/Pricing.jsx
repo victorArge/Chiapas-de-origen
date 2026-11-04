@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.js'
 import { usePlans } from '../hooks/usePlans.js'
 import { formatCurrency } from '../utils/format.js'
@@ -44,9 +44,9 @@ function Pricing() {
         <p className="eyebrow">Suscripciones</p>
         <h2>Planes mensuales en pesos mexicanos</h2>
         <p className="section-sub">
-          Cada cuenta nueva incluye {trialDays || 30} días de prueba. Los pagos de esta
-          versión son simulados: no se cobra dinero real ni se solicitan datos de tarjetas.
+          Cada cuenta nueva incluye {trialDays || 30} días de prueba.
         </p>
+        {notice && <p className="demo-note">{notice}</p>}
       </header>
 
       {loading && <p className="muted">Cargando planes...</p>}
@@ -92,10 +92,6 @@ function Pricing() {
             })}
           </div>
 
-          <div className="demo-panel">
-            <strong>Entorno DEMO</strong>
-            <p>{notice}</p>
-          </div>
         </>
       )}
     </section>

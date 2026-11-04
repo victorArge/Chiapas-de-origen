@@ -52,8 +52,7 @@ function Register() {
     <section className="section narrow">
       <h2>Crear cuenta</h2>
       <p className="muted">
-        Tu cuenta incluye 30 días de prueba. En esta versión los pagos son simulados
-        (DEMO) y no se solicitan datos de tarjetas.
+        Tu cuenta incluye 30 días de prueba.
       </p>
       {error && <p className="error">{error}</p>}
       {details.length > 0 && (

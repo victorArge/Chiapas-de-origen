@@ -5,7 +5,7 @@ import { useAdvisoryTypes } from '../hooks/useAdvisoryTypes.js'
 import { useAuth } from '../hooks/useAuth.js'
 import { useSubscription } from '../hooks/useSubscription.js'
 import SubscriptionGate from '../components/SubscriptionGate.jsx'
-import encuentraAsesor from '../../../imagenes/encuentra un asesor.jpeg'
+const encuentraAsesor = '/images/encuentra un asesor.jpeg'
 
 const EMPTY_FILTERS = { specialty: '', state: '', municipality: '', q: '' }
 

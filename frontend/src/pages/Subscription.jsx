@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+﻿import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../services/api.js'
 import { useAuth } from '../hooks/useAuth.js'
@@ -64,7 +64,7 @@ function Subscription() {
   function confirmPayment() {
     runAction(
       () => api.post(`/subscriptions/payments/${pendingPayment.id}/confirm`, {}),
-      'Pago simulado aprobado. Tu suscripción está activa.',
+      'La simulación quedó registrada y tu suscripción está activa en este entorno académico.',
     )
   }
 
@@ -72,17 +72,13 @@ function Subscription() {
     runAction(
       () =>
         api.post(`/subscriptions/payments/${pendingPayment.id}/reject`, {
-          reason: 'Operación rechazada manualmente en el entorno DEMO.',
+          reason: 'Operación rechazada manualmente.',
         }),
-      'Pago simulado rechazado. Tu suscripción no cambió.',
+      'La simulación quedó registrada como rechazada. Tu suscripción no cambió.',
     )
   }
 
-  const paymentLabel = subscription?.isTrial
-    ? 'Simular pago del plan'
-    : subscription?.isActive
-      ? 'Simular renovación'
-      : 'Simular pago de reactivación'
+  const paymentLabel = subscription?.isTrial ? 'Simular activación' : 'Simular renovación'
 
   if (loading && !subscription) {
     return <p className="section muted">Cargando suscripción...</p>
@@ -106,7 +102,7 @@ function Subscription() {
         <p className="eyebrow">Mi suscripción</p>
         <h2>Suscripción de {user?.name}</h2>
         <p className="section-sub">
-          Administra tu plan mensual y revisa el historial de operaciones simuladas.
+          Administra tu plan mensual y revisa el historial de pagos.
         </p>
       </header>
 
@@ -125,7 +121,7 @@ function Subscription() {
             {pendingPayment ? (
               <div className="pending-payment">
                 <div>
-                  <p className="eyebrow">Pago pendiente</p>
+                  <p className="eyebrow">Simulación pendiente</p>
                   <strong>
                     {formatCurrency(pendingPayment.amountMxn, pendingPayment.currency)} MXN
                   </strong>
@@ -141,7 +137,7 @@ function Subscription() {
                     onClick={confirmPayment}
                     disabled={actionLoading}
                   >
-                    {actionLoading ? 'Procesando...' : 'Confirmar pago DEMO'}
+                    {actionLoading ? 'Registrando...' : 'Confirmar simulación'}
                   </button>
                   <button
                     className="btn btn-outline"
@@ -149,7 +145,7 @@ function Subscription() {
                     onClick={rejectPayment}
                     disabled={actionLoading}
                   >
-                    Rechazar
+                    Rechazar simulación
                   </button>
                 </div>
               </div>
@@ -170,7 +166,7 @@ function Subscription() {
           <h3 className="panel-subtitle">Historial de pagos</h3>
           {historyStatus === 'loading' && <p className="muted">Cargando pagos...</p>}
           {historyStatus === 'ready' && payments.length === 0 && (
-            <p className="muted">Todavía no hay pagos simulados registrados.</p>
+            <p className="muted">Todavía no hay pagos registrados.</p>
           )}
 
           {historyStatus === 'ready' && payments.length > 0 && (

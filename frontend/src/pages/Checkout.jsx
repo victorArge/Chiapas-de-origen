@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../services/api.js'
 import { useAuth } from '../hooks/useAuth.js'
@@ -36,8 +36,8 @@ function Checkout() {
   const currency = plan?.currency || subscription?.currency || 'MXN'
   const isTrial = Boolean(subscription?.isTrial)
   const submitLabel = isTrial
-    ? `Activar plan · ${formatCurrency(amount, currency)} MXN`
-    : `Renovar · ${formatCurrency(amount, currency)} MXN`
+    ? `Simular activación · ${formatCurrency(amount, currency)} MXN`
+    : `Simular renovación · ${formatCurrency(amount, currency)} MXN`
 
   function handleCardChange(name, value) {
     setCard((current) => ({ ...current, [name]: value }))
@@ -127,12 +127,12 @@ function Checkout() {
       const paymentId = pendingPayment?.id
       const data = paymentId
         ? await api.post(`/subscriptions/payments/${paymentId}/reject`, {
-            reason: 'Operación rechazada manualmente en el entorno DEMO.',
+            reason: 'Operación rechazada manualmente.',
           })
         : await (async () => {
             const created = await api.post('/subscriptions/payments', {})
             return api.post(`/subscriptions/payments/${created.payment.id}/reject`, {
-              reason: 'Operación rechazada manualmente en el entorno DEMO.',
+              reason: 'Operación rechazada manualmente.',
             })
           })()
 
@@ -180,7 +180,8 @@ function Checkout() {
         <p className="eyebrow">Suscripción</p>
         <h2>Checkout de pago</h2>
         <p className="section-sub">
-          Completa los datos de la tarjeta simulada para activar o renovar tu suscripción.
+          Este flujo es una simulación académica. Usa solo datos ficticios; no ingreses
+          información real de tarjeta.
         </p>
       </header>
 
@@ -220,7 +221,7 @@ function Checkout() {
           ) : status === CHECKOUT_STATUS.PROCESANDO ? (
             <div className="checkout-processing">
               <span className="spinner" aria-hidden="true" />
-              <p>Procesando el pago simulado...</p>
+              <p>Registrando la simulación...</p>
             </div>
           ) : (
             <CheckoutForm
@@ -231,7 +232,7 @@ function Checkout() {
               onSubmit={handlePay}
               onReject={handleReject}
               submitLabel={submitLabel}
-              processingLabel="Procesando..."
+              processingLabel="Registrando..."
             />
           )}
 

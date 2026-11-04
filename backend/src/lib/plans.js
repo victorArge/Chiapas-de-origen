@@ -1,8 +1,8 @@
-export const PLAN_DURATION_DAYS = 30
+﻿export const PLAN_DURATION_DAYS = 30
 export const TRIAL_DURATION_DAYS = 30
 
-export const DEMO_NOTICE =
-  'Entorno DEMO: los pagos son simulados y no se procesa dinero real ni se solicitan datos de tarjetas.'
+export const PAYMENT_NOTICE =
+  'Simulación académica: no se realiza ningún cargo real.'
 
 export const PLANS = {
   PRODUCER_MONTHLY: {

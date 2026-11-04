@@ -1,4 +1,4 @@
-import { formatCurrency, formatDate } from '../utils/format.js'
+﻿import { formatCurrency, formatDate } from '../utils/format.js'
 import { statusInfo, subscriptionStatusInfo } from '../data/subscriptions.js'
 
 function SubscriptionStatusCard({ subscription, plan, notice }) {
@@ -43,15 +43,15 @@ function SubscriptionStatusCard({ subscription, plan, notice }) {
 
       {subscription.isTrial && subscription.isActive && (
         <p className="muted">
-          Estás en el periodo de prueba de 30 días. Puedes simular un pago para activar tu
-          plan mensual en cualquier momento.
+          Estás en el periodo de prueba de 30 días. Puedes usar la simulación académica
+          para activar tu plan mensual; no se realiza ningún cargo real.
         </p>
       )}
 
       {!subscription.isActive && (
         <p className="error">
-          Tu suscripción no está activa. Realiza un pago simulado para volver a usar las
-          funciones de tu cuenta.
+          Tu suscripción no está activa. Puedes revisar la simulación académica para
+          reactivar las funciones de tu cuenta; no se realiza ningún cargo real.
         </p>
       )}
 

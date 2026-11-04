@@ -19,7 +19,7 @@ import {
   LockIcon,
 } from '../components/Icons.jsx'
 
-import encuentraAsesor from '../../../imagenes/encuentra un asesor.jpeg'
+const encuentraAsesor = '/images/encuentra un asesor.jpeg'
 const bienvenidaImg = '/images/BienvenidosaChiapasdeOrigen.png'
 
 const SPECIALTY_ICONS = {
@@ -319,8 +319,7 @@ function Home() {
             <p className="eyebrow">Planes</p>
             <h2>Suscripciones mensuales en MXN</h2>
             <p className="section-sub">
-              Cada cuenta nueva incluye {trialDays} días de prueba. Los pagos son
-              simulados: no se cobra dinero real.
+              Cada cuenta nueva incluye {trialDays} días de prueba.
             </p>
           </header>
 

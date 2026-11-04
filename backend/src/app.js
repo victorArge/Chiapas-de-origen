@@ -11,8 +11,26 @@ import subscriptionsRouter from './routes/subscriptions.js';
 
 const app = express();
 
+const configuredOrigins = (process.env.CORS_ORIGIN || '')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+const allowedOrigins = [
+  ...(process.env.NODE_ENV === 'production' ? [] : ['http://localhost:5173']),
+  ...configuredOrigins,
+];
+
 app.use(helmet());
-app.use(cors());
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(null, false);
+    },
+  }),
+);
 app.use(express.json());
 
 app.get('/api/health', (req, res) => {

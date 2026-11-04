@@ -27,7 +27,8 @@ function SubscriptionGate({ children }) {
         <h2>Necesitas una suscripción activa</h2>
         <p className="muted">
           Las solicitudes, paneles y herramientas de tu cuenta se habilitan con una
-          suscripción vigente. Puedes activarla con un pago simulado de demostración.
+          suscripción vigente. Puedes revisar la simulación académica de activación; no
+          se realiza ningún cargo real.
         </p>
         <Link className="btn btn-primary" to="/suscripcion">
           Ver mi suscripción

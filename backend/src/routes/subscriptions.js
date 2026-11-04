@@ -2,7 +2,7 @@
 import { randomUUID } from 'node:crypto'
 import { prisma } from '../lib/prisma.js'
 import { authenticate } from '../middleware/auth.js'
-import { DEMO_NOTICE, TRIAL_DURATION_DAYS, planByCode, planForRole, planList } from '../lib/plans.js'
+import { PAYMENT_NOTICE, TRIAL_DURATION_DAYS, planByCode, planForRole, planList } from '../lib/plans.js'
 import {
   activateSubscription,
   ensureSubscription,
@@ -17,7 +17,7 @@ const router = Router()
 router.get('/plans', (req, res) => {
   res.json({
     demo: true,
-    notice: DEMO_NOTICE,
+    notice: PAYMENT_NOTICE,
     currency: 'MXN',
     trialDays: TRIAL_DURATION_DAYS,
     items: planList(),
@@ -39,7 +39,7 @@ router.get('/me', authenticate, async (req, res, next) => {
 
     res.json({
       demo: true,
-      notice: DEMO_NOTICE,
+      notice: PAYMENT_NOTICE,
       plan: planByCode(subscription.plan),
       subscription: serializeSubscription(subscription),
       pendingPayment: pendingPayment ? serializePayment(pendingPayment) : null,
@@ -58,7 +58,7 @@ router.get('/payments/me', authenticate, async (req, res, next) => {
 
     res.json({
       demo: true,
-      notice: DEMO_NOTICE,
+      notice: PAYMENT_NOTICE,
       items: payments.map(serializePayment),
     })
   } catch (error) {
@@ -83,7 +83,7 @@ router.post('/payments', authenticate, async (req, res, next) => {
 
     if (pendingPayment) {
       return res.status(409).json({
-        error: 'Ya tienes un pago simulado pendiente. ConfÃ­rmalo o rechÃ¡zalo antes de crear otro.',
+        error: 'Ya tienes un pago pendiente. ConfÃ­rmalo o rechÃ¡zalo antes de crear otro.',
         payment: serializePayment(pendingPayment),
       })
     }
@@ -96,13 +96,13 @@ router.post('/payments', authenticate, async (req, res, next) => {
         currency: plan.currency,
         status: 'PENDING',
         type: subscription.isTrial ? 'INITIAL' : 'RENEWAL',
-        reference: `DEMO-${randomUUID()}`,
+        reference: `PAY-${randomUUID()}`,
       },
     })
 
     res.status(201).json({
       demo: true,
-      notice: DEMO_NOTICE,
+      notice: PAYMENT_NOTICE,
       payment: serializePayment(payment),
     })
   } catch (error) {
@@ -148,7 +148,7 @@ router.post('/payments/:id/confirm', authenticate, async (req, res, next) => {
 
     res.json({
       demo: true,
-      notice: DEMO_NOTICE,
+      notice: PAYMENT_NOTICE,
       payment: serializePayment(updatedPayment),
       subscription: serializeSubscription(subscription),
     })
@@ -185,13 +185,13 @@ router.post('/payments/:id/reject', authenticate, async (req, res, next) => {
       where: { id: payment.id },
       data: {
         status: 'REJECTED',
-        failureReason: parsed.data.reason || 'OperaciÃ³n rechazada en el entorno DEMO.',
+        failureReason: parsed.data.reason || 'OperaciÃ³n rechazada',
       },
     })
 
     res.json({
       demo: true,
-      notice: DEMO_NOTICE,
+      notice: PAYMENT_NOTICE,
       payment: serializePayment(rejected),
     })
   } catch (error) {
