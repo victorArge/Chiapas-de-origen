@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { api } from '../services/api.js'
 import { useAuth } from '../hooks/useAuth.js'
 import RequestCard from '../components/RequestCard.jsx'
 import SubscriptionBanner from '../components/SubscriptionBanner.jsx'
+import BrandBanner from '../components/BrandBanner.jsx'
 
 function ProducerPanel() {
   const { user } = useAuth()
@@ -33,6 +34,12 @@ function ProducerPanel() {
 
   return (
     <section className="section">
+      <BrandBanner
+        image="/images/BienvenidosaChiapasdeOrigen.png"
+        title="Panel del productor"
+        description="Acceso al seguimiento de tus solicitudes de asesoría agronómica."
+        className="brand-banner-compact"
+      />
       <h2>Panel del productor</h2>
       <p className="muted">Hola, {user?.name}. Estas son tus solicitudes de asesoría.</p>
 

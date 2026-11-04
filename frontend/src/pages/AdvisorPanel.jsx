@@ -1,6 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { api } from '../services/api.js'
 import { useAuth } from '../hooks/useAuth.js'
+import { useSubscription } from '../hooks/useSubscription.js'
+import BrandBanner from '../components/BrandBanner.jsx'
 import RequestCard from '../components/RequestCard.jsx'
 import SubscriptionBanner from '../components/SubscriptionBanner.jsx'
 import {
@@ -22,6 +24,7 @@ const EMPTY_FORM = {
 
 function AdvisorPanel() {
   const { user } = useAuth()
+  const { subscription } = useSubscription()
   const [types, setTypes] = useState([])
   const [form, setForm] = useState(EMPTY_FORM)
   const [hasProfile, setHasProfile] = useState(false)
@@ -211,8 +214,39 @@ function AdvisorPanel() {
   const canEditDocuments =
     verification?.status !== 'PENDING' && verification?.status !== 'APPROVED'
 
+  if (
+    user?.role === 'ADVISOR' &&
+    Boolean(subscription?.isActive) &&
+    !subscription?.isTrial &&
+    verification?.status === 'PENDING'
+  ) {
+    return (
+      <section className="section">
+        <div className="advisor-grid">
+          <div className="advisor-copy">
+            <p className="eyebrow">Asesor agronómico</p>
+            <h2>Estás dentro del proceso de activación</h2>
+            <p>
+              Tu pago fue registrado correctamente. Estamos esperando la revisión de tu
+              documentación profesional para habilitar el panel profesional.
+            </p>
+            <p className="advisor-lock-message">Contenido exclusivo para agricultores suscritos</p>
+            {verification?.rejectionReason && (
+              <p className="error">Motivo de rechazo: {verification.rejectionReason}</p>
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="section">
+      <BrandBanner
+        title="Panel del asesor"
+        description="Panel profesional para la revisión y gestión de solicitudes de asesoría."
+        className="brand-banner-compact"
+      />
       <h2>Panel del asesor</h2>
       <p className="muted">
         {hasProfile

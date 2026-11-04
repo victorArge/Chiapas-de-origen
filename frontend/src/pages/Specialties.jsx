@@ -12,6 +12,7 @@ import establecimientoImage from '../../../imagenes/Establecimiento.jpeg'
 import plagasEnfermedadesImage from '../../../imagenes/plagas y enfermedades.jpeg'
 import aguaRiegoImage from '../../../imagenes/Agua y riego.jpeg'
 import nutricionFertilizacionImage from '../../../imagenes/Nutrición y fertilización.jpeg'
+import BrandBanner from '../components/BrandBanner.jsx'
 
 function normalizeKey(name) {
   return (name || '')
@@ -70,6 +71,11 @@ function Specialties() {
 
   return (
     <section className="section">
+      <BrandBanner
+        title="Catálogo de especialidades"
+        description="Temas de asesoría agronómica para el cultivo de plátano en Chiapas."
+        className="brand-banner-compact"
+      />
       <h2>Catálogo de especialidades</h2>
 
       {status === 'loading' && <p className="muted">Cargando especialidades...</p>}

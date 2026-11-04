@@ -1,9 +1,11 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.js'
+import { useSubscription } from '../hooks/useSubscription.js'
 
 function Register() {
   const { register } = useAuth()
+  const { refresh } = useSubscription()
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const [form, setForm] = useState(() => ({
@@ -29,8 +31,15 @@ function Register() {
 
     try {
       const user = await register(form)
-      const fallback = user.role === 'ADVISOR' ? '/panel/asesor' : '/panel/productor'
-      navigate(fallback, { replace: true })
+      const data = await refresh()
+      const current = data?.subscription ?? null
+      const hasPaidAccess = Boolean(current?.isActive) && !current?.isTrial
+      const target = hasPaidAccess
+        ? user.role === 'ADVISOR'
+          ? '/panel/asesor'
+          : '/panel/productor'
+        : '/bienvenido'
+      navigate(target, { replace: true })
     } catch (err) {
       setError(err.message)
       if (err.details?.length) setDetails(err.details)

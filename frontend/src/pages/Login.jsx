@@ -1,9 +1,11 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth.js'
+import { useSubscription } from '../hooks/useSubscription.js'
 
 function Login() {
   const { login } = useAuth()
+  const { refresh } = useSubscription()
   const navigate = useNavigate()
   const location = useLocation()
   const [form, setForm] = useState({ email: '', password: '' })
@@ -22,13 +24,20 @@ function Login() {
 
     try {
       const user = await login(form.email, form.password)
-      const fallback =
-        user.role === 'ADMIN'
-          ? '/panel/admin'
-          : user.role === 'ADVISOR'
+      let target
+      if (user.role === 'ADMIN') {
+        target = '/panel/admin'
+      } else {
+        const data = await refresh()
+        const current = data?.subscription ?? null
+        const hasPaidAccess = Boolean(current?.isActive) && !current?.isTrial
+        target = hasPaidAccess
+          ? user.role === 'ADVISOR'
             ? '/panel/asesor'
             : '/panel/productor'
-      navigate(location.state?.from || fallback, { replace: true })
+          : '/bienvenido'
+      }
+      navigate(location.state?.from || target, { replace: true })
     } catch (err) {
       setError(err.message)
     } finally {

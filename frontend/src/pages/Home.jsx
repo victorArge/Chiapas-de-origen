@@ -18,8 +18,9 @@ import {
   CheckIcon,
   LockIcon,
 } from '../components/Icons.jsx'
-import portadaPlatanos from '../../../imagenes/portada_platano.jpeg'
+
 import encuentraAsesor from '../../../imagenes/encuentra un asesor.jpeg'
+const bienvenidaImg = '/images/BienvenidosaChiapasdeOrigen.png'
 
 const SPECIALTY_ICONS = {
   establecimiento: PlantIcon,
@@ -58,7 +59,8 @@ function Home() {
   const advisorCanAccessCatalog =
     advisorAccessResolved &&
     user?.role === 'PRODUCER' &&
-    Boolean(subscription?.isActive)
+    Boolean(subscription?.isActive) &&
+    !subscription?.isTrial
 
   const advisorSectionVisible =
     user?.role !== 'ADVISOR' && user?.role !== 'ADMIN'
@@ -84,7 +86,7 @@ function Home() {
     <>
       <section className="hero">
         <div className="hero-media">
-          <img src={portadaPlatanos} alt="Planta de plátano con hojas verdes en las laderas de Chiapas" />
+          <img src={bienvenidaImg} alt="Planta de plátano con hojas verdes en las laderas de Chiapas" />
         </div>
         <div className="hero-content">
           <p className="eyebrow">Asesoría agronómica en Chiapas</p>

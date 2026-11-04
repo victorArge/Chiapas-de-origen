@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+﻿import { Link } from 'react-router-dom'
 import { useSubscription } from '../hooks/useSubscription.js'
 
 function SubscriptionGate({ children }) {
@@ -20,7 +20,7 @@ function SubscriptionGate({ children }) {
     )
   }
 
-  if (!subscription?.isActive) {
+  if (!(subscription?.isActive && !subscription?.isTrial)) {
     return (
       <section className="section narrow">
         <p className="eyebrow">Acceso restringido</p>

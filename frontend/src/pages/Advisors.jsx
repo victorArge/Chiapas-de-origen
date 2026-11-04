@@ -4,7 +4,7 @@ import { api } from '../services/api.js'
 import { useAdvisoryTypes } from '../hooks/useAdvisoryTypes.js'
 import { useAuth } from '../hooks/useAuth.js'
 import { useSubscription } from '../hooks/useSubscription.js'
-import { LockIcon } from '../components/Icons.jsx'
+import SubscriptionGate from '../components/SubscriptionGate.jsx'
 import encuentraAsesor from '../../../imagenes/encuentra un asesor.jpeg'
 
 const EMPTY_FILTERS = { specialty: '', state: '', municipality: '', q: '' }
@@ -45,11 +45,12 @@ function Advisors() {
   const advisorAccessResolved = !subscriptionLoading
   const canAccessCatalog =
     advisorAccessResolved &&
-    user?.role === 'PRODUCER' &&
-    Boolean(subscription?.isActive)
+    (user?.role === 'PRODUCER' || user?.role === 'ADVISOR') &&
+    Boolean(subscription?.isActive) &&
+    !subscription?.isTrial
 
   const advisorSectionVisible =
-    user?.role !== 'ADVISOR' && user?.role !== 'ADMIN'
+    user?.role !== 'ADMIN'
 
   const advisorCatalogLocked = !canAccessCatalog && advisorSectionVisible
 
@@ -112,41 +113,8 @@ function Advisors() {
           />
         </div>
       </div>
-
       {advisorCatalogLocked ? (
-        <div className="advisor-lock">
-          <span className="advisor-lock-icon" aria-hidden="true">
-            <LockIcon />
-          </span>
-          <h3>Desbloquea el acceso a nuestros asesores</h3>
-          <p>
-            Suscríbete para encontrar profesionales especializados en el cultivo
-            de plátano, consultar sus perfiles y solicitar asesoría técnica.
-          </p>
-          <p className="advisor-lock-message">Contenido exclusivo para agricultores suscritos</p>
-          {user?.role === 'PRODUCER' && subscription?.status === 'EXPIRED' ? (
-            <Link className="btn btn-primary" to="/suscripcion">
-              Renovar suscripción
-            </Link>
-          ) : user ? (
-            <>
-              <p className="advisor-lock-price">$300 MXN</p>
-              <p className="advisor-lock-duration">30 días</p>
-              <Link className="btn btn-primary" to="/suscripcion">
-                Suscribirte para tener acceso a este menú
-              </Link>
-            </>
-          ) : (
-            <div className="advisor-lock-actions">
-              <Link className="btn btn-outline" to="/login">
-                Iniciar sesión
-              </Link>
-              <Link className="btn btn-outline" to="/registro?rol=productor">
-                Registrarme
-              </Link>
-            </div>
-          )}
-        </div>
+        <SubscriptionGate />
       ) : (
         <>
           <form className="filters" onSubmit={handleSubmit}>

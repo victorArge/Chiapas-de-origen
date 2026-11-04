@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+﻿import { useCallback, useEffect, useMemo, useState } from 'react'
 import { api } from '../services/api.js'
 import { useAuth } from '../hooks/useAuth.js'
 import {
@@ -14,6 +14,7 @@ import {
   formatDateTime,
   formatFileSize,
 } from '../utils/format.js'
+import BrandBanner from '../components/BrandBanner.jsx'
 
 const SECTIONS = [
   { id: 'overview', label: 'Resumen' },
@@ -192,6 +193,7 @@ function AdminPanel() {
 
   return (
     <section className="section admin-section">
+      <BrandBanner image="/images/BienvenidosaChiapasdeOrigen.png" title="Panel administrativo" description="Panel institucional para la revisión de solicitudes y suscripciones." className="brand-banner-compact" />
       <div className="admin-head">
         <div>
           <p className="eyebrow">Administración</p>

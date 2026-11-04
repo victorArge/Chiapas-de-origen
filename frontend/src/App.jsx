@@ -15,6 +15,7 @@ import Register from './pages/Register.jsx'
 import ProducerPanel from './pages/ProducerPanel.jsx'
 import AdvisorPanel from './pages/AdvisorPanel.jsx'
 import AdminPanel from './pages/AdminPanel.jsx'
+import Welcome from './pages/Welcome.jsx'
 import NotFound from './pages/NotFound.jsx'
 import './App.css'
 
@@ -85,6 +86,14 @@ function App() {
             }
           />
           <Route path="/admin" element={<Navigate to="/panel/admin" replace />} />
+          <Route
+            path="/bienvenido"
+            element={
+              <ProtectedRoute roles={['PRODUCER', 'ADVISOR']}>
+                <Welcome />
+              </ProtectedRoute>
+            }
+          />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

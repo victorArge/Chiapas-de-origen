@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom'
+﻿import { useNavigate } from 'react-router-dom'
 import { formatCurrency, formatDate, formatDateTime } from '../utils/format.js'
 
 function PaymentResult({
@@ -77,7 +77,7 @@ function PaymentResult({
           <button
             className="btn btn-primary"
             type="button"
-            onClick={() => navigate(user?.role === 'ADVISOR' ? '/panel/asesor' : '/panel/productor')}
+            onClick={() => navigate(user?.role === 'ADVISOR' ? '/bienvenido' : '/panel/productor')}
           >
             Ir al panel
           </button>

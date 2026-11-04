@@ -1,4 +1,4 @@
-import { ensureSubscription, isSubscriptionActive, serializeSubscription } from '../lib/subscriptions.js'
+﻿import { ensureSubscription, isSubscriptionActive, serializeSubscription } from '../lib/subscriptions.js'
 import { DEMO_NOTICE } from '../lib/plans.js'
 
 export async function requireActiveSubscription(req, res, next) {
@@ -9,7 +9,7 @@ export async function requireActiveSubscription(req, res, next) {
       return res.status(403).json({ error: 'No autorizado' })
     }
 
-    if (!isSubscriptionActive(subscription)) {
+    if (subscription.isTrial || !isSubscriptionActive(subscription)) {
       return res.status(402).json({
         error: 'Tu suscripción no está activa. Renueva para continuar.',
         code: 'SUBSCRIPTION_REQUIRED',
